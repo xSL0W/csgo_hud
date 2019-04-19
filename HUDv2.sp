@@ -8,8 +8,8 @@ public Plugin myinfo =
 {
 	name = "HUDv2",
 	author = "xSLOW",
-	description = "Better Hud",
-	version = "1.0"
+	description = "Server HUD",
+	version = "1.1"
 };
 
 #define MESSAGE_1 "MESSAGE 1"                    // Top Left Message 1
@@ -62,9 +62,11 @@ public Action Command_hud(client, args)
 
 public Action TIMER(Handle timer)
 {
+	int clientCount = 0;
+	for (int i = 1; i <= MaxClients; i++)
+	if (IsClientInGame(i) && !IsFakeClient(i))++clientCount;
 	char sTime[60];
 	int iTimeleft;
-	int clientCount = GetPlayerCount();
 
 	char szTime[30];
 	FormatTime(szTime, sizeof(szTime), "%H:%M:%S", GetTime());
@@ -77,14 +79,14 @@ public Action TIMER(Handle timer)
 		{
 			if(IsClientInGame(i) && !IsFakeClient(i) && g_IsHudEnabled == true)
 			{
-           		SetHudTextParams(0.0, 0.0, 1.0, rgba, 0, 0.1, 0.0, 0.0);  
-           		ShowHudText(i, -1, MESSAGE_1);  
+				SetHudTextParams(0.0, 0.0, 1.0, rgba, 0, 0.1, 0.0, 0.0);  
+				ShowHudText(i, -1, MESSAGE_1);  
 
-           		SetHudTextParams(0.0, 0.03, 1.0, rgba, 0, 0.1, 0.0, 0.0);  
-            	ShowHudText(i, -1, MESSAGE_2);  
+				SetHudTextParams(0.0, 0.03, 1.0, rgba, 0, 0.1, 0.0, 0.0);  
+				ShowHudText(i, -1, MESSAGE_2);  
 
-            	SetHudTextParams(-1.0, 0.075, 5.0, rgba, 0, 0.1, 0.0, 0.0);  
-            	ShowHudText(i, -1, MESSAGE_3);  
+				SetHudTextParams(-1.0, 0.075, 5.0, rgba, 0, 0.1, 0.0, 0.0);  
+				ShowHudText(i, -1, MESSAGE_3);  
 
 				char players[60];
 				Format(players, sizeof(players), "Players: %d/%d", clientCount, slots);
@@ -96,7 +98,7 @@ public Action TIMER(Handle timer)
 				SetHudTextParams(0.0, 0.09, 1.0, rgba, 0, 0.00, 0.0, 0.0);
 				ShowHudText(i, -1, message);
 
-            	char timp2[60];
+				char timp2[60];
 				Format(timp2, sizeof(timp2), "Clock: %s", szTime);
 				SetHudTextParams(0.0, 0.12, 1.0, rgba, 0, 0.00, 0.0, 0.0);
 				ShowHudText(i, -1, timp2);
@@ -106,22 +108,9 @@ public Action TIMER(Handle timer)
 	return Plugin_Continue;
 }
 
-
 stock bool IsClientValid(int client)
 {
     if (client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsFakeClient(client))
         return true;
     return false;
 }
-
-
-public Action GetPlayerCount()
-{
-    new players;
-    for (new i = 1; i <= MaxClients; i++)
-    {
-        if (IsClientInGame(i) && !IsFakeClient(i))
-            players++;
-    }
-    return players;
-} 
