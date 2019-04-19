@@ -87,7 +87,7 @@ public Action TIMER(Handle timer)
             	ShowHudText(i, -1, MESSAGE_3);  
 
 				char players[60];
-				Format(players, sizeof(players), "Jucatori: %d/%d", clientCount, slots);
+				Format(players, sizeof(players), "Players: %d/%d", clientCount, slots);
 				SetHudTextParams(0.0, 0.06, 1.0, rgba, 0, 0.00, 0.0, 0.0);
 				ShowHudText(i, -1, players);
 
@@ -97,7 +97,7 @@ public Action TIMER(Handle timer)
 				ShowHudText(i, -1, message);
 
             	char timp2[60];
-				Format(timp2, sizeof(timp2), "Ora: %s", szTime);
+				Format(timp2, sizeof(timp2), "Clock: %s", szTime);
 				SetHudTextParams(0.0, 0.12, 1.0, rgba, 0, 0.00, 0.0, 0.0);
 				ShowHudText(i, -1, timp2);
 			}
