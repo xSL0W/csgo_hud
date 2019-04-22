@@ -12,7 +12,7 @@ public Plugin myinfo =
 	name = "HUDv2",
 	author = "xSLOW",
 	description = "Server Hud",
-	version = "1.2"
+	version = "1.1"
 };
 
 ConVar MESSAGE1;
@@ -24,7 +24,8 @@ ConVar G_COLOR;
 ConVar B_COLOR;
 
 Handle g_HUDv2_Cookie;
-bool g_IsHudEnabled;
+bool g_IsHudEnabled[MAXPLAYERS + 1];
+
 
 public void OnPluginStart()
 {
@@ -45,34 +46,33 @@ public void OnPluginStart()
 
 public void OnClientPutInServer(int client)
 {
+	g_IsHudEnabled[client] = true;
 	char buffer[64];
 	GetClientCookie(client, g_HUDv2_Cookie, buffer, sizeof(buffer));
-	if(StrEqual(buffer,""))
-	{
-		g_IsHudEnabled = true;
-	}
+	if(StrEqual(buffer,"0"))
+		g_IsHudEnabled[client] = false;
 }
 
 
 public Action Command_hud(int client, int args) 
 {
-	if(g_IsHudEnabled)
+	if(g_IsHudEnabled[client])
 	{
 		PrintToChat(client, " ★ \x02HUD is now off");
-		g_IsHudEnabled = false;
+		g_IsHudEnabled[client] = false;
 		SetClientCookie(client, g_HUDv2_Cookie, "0");
 	}
 	else
 	{
 		PrintToChat(client, " ★ \x04HUD is now on");
-		g_IsHudEnabled = true;
+		g_IsHudEnabled[client] = true;
 		SetClientCookie(client, g_HUDv2_Cookie, "1");
 	}
 	
 }
 
 
-public Action TIMER(Handle timer)
+public Action TIMER(Handle timer, any client)
 {
 	int clientCount = 0;
 	for (int i = 1; i <= MaxClients; i++)
@@ -96,35 +96,34 @@ public Action TIMER(Handle timer)
 		FormatTime(sTime, sizeof(sTime), "%M:%S", iTimeleft);
 		for(int i = 1; i <= MaxClients; i++)
 		{
-			if(IsClientInGame(i) && !IsFakeClient(i) && g_IsHudEnabled == true)
+			if(g_IsHudEnabled[i] && IsClientValid(i))
 			{
-				SetHudTextParams(0.0, 0.0, 1.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.1, 0.0, 0.0);  
+				SetHudTextParams(0.0, 0.0, 2.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.1, 0.0, 0.0);  
 				ShowHudText(i, -1, iMessage1);  
-
-				SetHudTextParams(0.0, 0.03, 1.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.1, 0.0, 0.0);  
+	
+				SetHudTextParams(0.0, 0.03, 2.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.1, 0.0, 0.0);  
 				ShowHudText(i, -1, iMessage2);  
-
-				SetHudTextParams(-1.0, 0.075, 5.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.1, 0.0, 0.0);  
+	
+				SetHudTextParams(-1.0, 0.075, 2.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.1, 0.0, 0.0);  
 				ShowHudText(i, -1, iMessage3);  
-
+	
 				char players[60];
 				Format(players, sizeof(players), "Players: %d/%d", clientCount, slots.IntValue);
-				SetHudTextParams(0.0, 0.06, 1.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.00, 0.0, 0.0);
+				SetHudTextParams(0.0, 0.06, 1.03, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.00, 0.0, 0.0);
 				ShowHudText(i, -1, players);
-
+	
 				char message[60];
 				Format(message, sizeof(message), "Timeleft: %s", sTime);
-				SetHudTextParams(0.0, 0.09, 1.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.00, 0.0, 0.0);
+				SetHudTextParams(0.0, 0.09, 1.03, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.00, 0.0, 0.0);
 				ShowHudText(i, -1, message);
 
 				char timp2[60];
 				Format(timp2, sizeof(timp2), "Clock: %s", szTime);
-				SetHudTextParams(0.0, 0.12, 1.0, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.00, 0.0, 0.0);
+				SetHudTextParams(0.0, 0.12, 1.03, iR_COLOR, iG_COLOR, iB_COLOR, 255, 0, 0.00, 0.0, 0.0);
 				ShowHudText(i, -1, timp2);
 			}
 		}
 	}
-	return Plugin_Continue;
 }
 
 stock bool IsClientValid(int client)
